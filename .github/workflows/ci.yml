@@ -25,3 +25,14 @@ jobs:
           pip install -r requirements.txt  # Ensure you have a `requirements.txt` file
       - name: Run Tests with Pytest
         run: pytest --maxfail=5 --disable-warnings --tb=short  # Let us run the tests
+
+  deploy:
+    needs: test
+    runs-on: ubuntu-latest
+    if: github.event.pull_request.merged == true
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Deploy API
+        run: | uvicorn main:app --host 0.0.0.0 --port 8000 &
